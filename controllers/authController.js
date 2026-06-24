@@ -59,7 +59,7 @@ const login = async (req, res) => {
     }
 
     return res.status(500).json({
-      message: 'Server failure'
+      message: 'Server failure',
     });
   }
 };
