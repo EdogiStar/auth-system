@@ -13,13 +13,12 @@ const register = async (req, res) => {
       });
     }
 
-    const user = await authService.registerUser(req.body);
+    const loginData = await authService.registerUser(req.body);
 
-    return res.status(201).json({
-      message: 'User registered successfully',
-      data: user,
+    return res.status(200).json({
+        message: 'Logged in successfully',
+        data: loginData
     });
-
   } catch (error) {
 
     if (error.message === 'EMAIL_EXISTS') {
@@ -47,7 +46,7 @@ const login = async (req, res) => {
     const user = await authService.loginUser(req.body);
 
     return res.status(200).json({
-      message: 'Logged in  successfully',
+      message: 'Logged in successfully',
       data: user,
     });
 

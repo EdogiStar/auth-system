@@ -1,5 +1,6 @@
 
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/UserModel');
 
 const loginUser = async (userData) => {
@@ -17,14 +18,25 @@ const loginUser = async (userData) => {
     if (!isMatch){
     throw new Error('INVALID_CREDENTIALS');
   }
+  const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role
+  }
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '15m'});
   
   return {
+  user: {
     id: user._id,
     name: user.name,
     email: user.email,
     role: user.role,
     createdAt: user.createdAt,
-  };
+  },
+
+  accessToken,
+};
+  
 };
 
 const registerUser = async (userData) => {
