@@ -3,6 +3,34 @@ const Joi = require('joi');
 
 const authService = require('../services/authService');
 
+const refresh = async (req, res) => {
+    try{
+        const { refreshToken } = req.body;
+        if(!refreshToken){
+            return res.status(400).json({
+                message: 'Refresh token is required',
+            });
+        }
+        
+        const tokens = await authService.refreshAccessToken(refreshToken);
+        
+        return res.status(200).json({
+            message: 'Access token refreshed successfully',
+            data: tokens,
+        });
+    }catch(error){
+        if(error.message === 'INVALID_REFRESH_TOKEN'){
+            return res.status(401).json({
+                message: 'Invalid refresh token',
+            });
+        }
+        
+        return res.status(500).json({
+            message: error.message,
+        });
+    }
+};
+
 const register = async (req, res) => {
   try {
     const { error } = validateUserRegistration(req.body);
@@ -89,5 +117,6 @@ function validateUserRegistration(user) {
 
 module.exports = {
   register,
-  login
+  login,
+  refresh
 };
