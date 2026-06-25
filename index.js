@@ -1,42 +1,47 @@
 
-const dotenv = require('dotenv');
-dotenv.config();
-const express = require('express');
-const cors = require('cors');
+require('dotenv').config();
 
-const app = express();
-app.use(cors());
+const app =
+require('./app');
 
+const connectDB =
+require('./config/db');
 
-const connectDB = require('./config/db');
+const port =
+process.env.PORT ||
+3000;
 
+const startServer =
+async () => {
 
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+try {
 
+await connectDB();
 
-const port = process.env.PORT || 3000;
+app.listen(
+port,
+() => {
 
-const authRoutes = require('./routes/authRoute');
+console.log(
+`Server running on port ${port}`
+);
 
+}
+);
 
-app.use('/api/auth', authRoutes);
+} catch (
+error
+) {
 
-app.get('/', (req, res) => {
-    res.send('Auth System Backend API is running...');
-});
+console.error(
+'Failed:',
+error.message
+);
 
-const startServer = async () => {
-    try {
-        await connectDB();
+process.exit(1);
 
-        app.listen(port, () => {
-            console.log(`Server is running on port ${port}...`);
-        });
-    } catch (error) {
-        console.error('Failed to start server:', error.message);
-        process.exit(1);
-    }
+}
+
 };
 
 startServer();

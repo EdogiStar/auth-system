@@ -160,8 +160,8 @@ const register = async (req, res) => {
 
     const loginData = await authService.registerUser(req.body);
 
-    return res.status(200).json({
-        message: 'Logged in successfully',
+    return res.status(201).json({
+        message: 'User registered successfully',
         data: loginData
     });
   } catch (error) {
@@ -190,7 +190,7 @@ const login = async (req, res) => {
 
     const user = await authService.loginUser(req.body);
 
-    return res.status(200).json({
+    return res.status(201).json({
       message: 'Logged in successfully',
       data: user,
     });
