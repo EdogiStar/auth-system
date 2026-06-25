@@ -5,7 +5,7 @@ const router = express.Router();
 
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/requireRole');
-const { register, login, refresh, logout } = require('../controllers/authController');
+const { register, login, refresh, logout, forgotPassword, resetPassword, } = require('../controllers/authController');
 
 
 router.get(
@@ -53,6 +53,12 @@ router.post('/refresh', refresh);
 
 // logout
 router.post('/logout', logout);
+
+router.post('/forgot-password', forgotPassword);
+
+router.post('/reset-password', resetPassword);
+
+
 
 
 // Export router

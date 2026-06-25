@@ -5,7 +5,116 @@ const crypto = require('crypto');
 
 const User = require('../models/UserModel');
 const RefreshToken = require('../models/RefreshTokenModel');
+const PasswordReset = require('../models/PasswordResetModel');
 
+const resetPassword = async (
+  token,
+  password
+) => {
+
+  // Hash incoming token
+  const tokenHash =
+    crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+  // Find stored token
+  const reset =
+    await PasswordReset.findOne({
+      tokenHash,
+    });
+
+  // Validate token
+  if (
+    !reset ||
+    reset.used ||
+    reset.expiresAt <
+      new Date()
+  ) {
+    throw new Error(
+      'INVALID_RESET_TOKEN'
+    );
+  }
+
+  // Find user
+  const user =
+    await User.findById(
+      reset.userId
+    );
+
+  if (!user) {
+    throw new Error(
+      'INVALID_RESET_TOKEN'
+    );
+  }
+
+  // Hash new password
+  const passwordHash =
+    await bcrypt.hash(
+      password,
+      10
+    );
+
+  // Update password
+  user.passwordHash =
+    passwordHash;
+
+  await user.save();
+
+  // Invalidate token
+  reset.used = true;
+
+  await reset.save();
+
+  return true;
+};
+
+
+const forgotPassword = async (email) => {
+   // getuser
+  const user = await User.findOne({email});
+
+  // to prevent email enumeration
+  if (!user) {
+      return null;
+  }
+  // generate reset token
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  // Hash token
+  const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // Expiry (15 mins)
+  const expiresAt =
+    new Date(
+      Date.now() +
+      15 * 60 * 1000
+    );
+
+  // Invalidate old reset tokens
+  await PasswordReset.updateMany(
+    {
+      userId: user._id,
+      used: false,
+    },
+    {
+      used: true,
+    }
+  );
+
+  // Save reset token
+  await PasswordReset.create({
+    userId: user._id,
+    tokenHash,
+    expiresAt,
+    used: false,
+  });
+
+  // Testing only
+  return {
+    resetToken,
+  };
+};
 
 const logoutUser = async (refreshToken) => {
     
@@ -20,7 +129,7 @@ const logoutUser = async (refreshToken) => {
         );
     }
     
-    // revoked token
+    // revoke token
     storedToken.revoked = true;
     await storedToken.save();
     
@@ -244,6 +353,7 @@ module.exports = {
   loginUser,
   refreshAccessToken,
   logoutUser,
-  
+  forgotPassword,
+  resetPassword,
 };
 
