@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 
-const { register, login, refresh } = require('../controllers/authController');
+const { register, login, refresh, logout } = require('../controllers/authController');
 
 
 
@@ -17,9 +17,13 @@ router.post('/register', register);
 // login 
 router.post('/login', login);
 
-// refresh 
+// refresh access token 
 router.post('/refresh', refresh);
+
+// logout
+router.post('/logout', logout);
 
 
 // Export router
 module.exports = router;
+

@@ -6,6 +6,27 @@ const crypto = require('crypto');
 const User = require('../models/UserModel');
 const RefreshToken = require('../models/RefreshTokenModel');
 
+
+const logoutUser = async (refreshToken) => {
+    
+    // hash token
+    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    
+    // find stored token
+    const storedToken = await RefreshToken.findOne({ tokenHash });
+    if(!storedToken){
+        throw new Error (
+            'INVALID_REFRESH_TOKEN',
+        );
+    }
+    
+    // revoked token
+    storedToken.revoked = true;
+    await storedToken.save();
+    
+};
+
+
 const refreshAccessToken = async (refreshToken) => {
   try {
 
@@ -222,4 +243,7 @@ module.exports = {
   registerUser,
   loginUser,
   refreshAccessToken,
+  logoutUser,
+  
 };
+
