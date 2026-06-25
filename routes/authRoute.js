@@ -1,14 +1,29 @@
 
 const express = require('express');
 
-
 const router = express.Router();
 
-
+const authMiddleware = require('../middleware/authMiddleware');
+const requireRole = require('../middleware/requireRole');
 const { register, login, refresh, logout } = require('../controllers/authController');
 
-const authMiddleware =
-require('../middleware/authMiddleware');
+
+router.get(
+  '/admin',
+  authMiddleware,
+  requireRole('ADMIN'),
+
+  (req, res) => {
+    res.status(200).json({
+      message:
+        'Welcome admin',
+
+      user:
+        req.user,
+    });
+  }
+);
+
 
 router.get(
   '/profile',
