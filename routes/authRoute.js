@@ -7,6 +7,22 @@ const router = express.Router();
 
 const { register, login, refresh, logout } = require('../controllers/authController');
 
+const authMiddleware =
+require('../middleware/authMiddleware');
+
+router.get(
+  '/profile',
+  authMiddleware,
+  (req, res) => {
+    res.status(200).json({
+      message:
+        'Protected route',
+
+      user:
+        req.user,
+    });
+  }
+);
 
 
 // AUTH ROUTES
