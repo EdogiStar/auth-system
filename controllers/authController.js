@@ -190,7 +190,7 @@ const login = async (req, res) => {
 
     const user = await authService.loginUser(req.body);
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: 'Logged in successfully',
       data: user,
     });

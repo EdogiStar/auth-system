@@ -24,7 +24,7 @@ describe('Auth API', () => {
       .post('/api/auth/register')
       .send({
         name: 'Test User',
-        email: `test${Date.now()}@example.com`,
+        email: `register${Date.now()}@example.com`,
         password: 'securepass123',
       });
 
@@ -33,9 +33,143 @@ describe('Auth API', () => {
     expect(response.body.message)
       .toBe('User registered successfully');
 
-    expect(response.body.data)
-      .toHaveProperty('email');
+  });
+
+  it('should login successfully', async () => {
+
+    const email =
+      `login${Date.now()}@example.com`;
+
+    const password =
+      'securepass123';
+
+    // register user first
+    await request(app)
+      .post('/api/auth/register')
+      .send({
+        name: 'Login User',
+        email,
+        password,
+      });
+
+    // login
+    const response =
+      await request(app)
+
+      .post('/api/auth/login')
+
+      .send({
+        email,
+        password,
+      });
+
+    expect(response.status)
+      .toBe(200);
+
+    expect(response.body.message)
+      .toBe(
+        'Logged in successfully'
+      );
+
+    expect(
+      response.body.data
+    )
+
+    .toHaveProperty(
+      'accessToken'
+    );
+
+    expect(
+      response.body.data
+    )
+
+    .toHaveProperty(
+      'refreshToken'
+    );
 
   });
+
+  it(
+    'should reject invalid password',
+
+    async () => {
+
+      const email =
+        `wrong${Date.now()}@example.com`;
+
+      await request(app)
+        .post('/api/auth/register')
+        .send({
+          name:
+          'Wrong Password',
+
+          email,
+
+          password:
+          'securepass123',
+        });
+
+      const response =
+        await request(app)
+
+        .post(
+          '/api/auth/login'
+        )
+
+        .send({
+
+          email,
+
+          password:
+          'wrongpass',
+
+        });
+
+      expect(
+        response.status
+      )
+
+      .toBe(
+        401
+      );
+
+    }
+
+  );
+
+  it(
+    'should reject unknown email',
+
+    async () => {
+
+      const response =
+
+      await request(app)
+
+      .post(
+        '/api/auth/login'
+      )
+
+      .send({
+
+        email:
+        'fake@example.com',
+
+        password:
+        'securepass123',
+
+      });
+
+      expect(
+        response.status
+      )
+
+      .toBe(
+        401
+      );
+
+    }
+
+  );
 
 });
