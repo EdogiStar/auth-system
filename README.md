@@ -1,155 +1,60 @@
-# 🔐 Authentication System API (3MTT Project)
+# Auth System
 
-A production-style authentication system built with Node.js, Express, and MongoDB.
-It handles user registration, login, JWT authentication, refresh tokens, role-based access control, and password reset functionality.
+A secure backend authentication system built with Node.js, Express.js, MongoDB, and JWT.
 
+# Features
 
----
+- User Registration
+- User Login
+- Access Token Authentication (JWT)
+- Refresh Token Support
+- Token Refresh Flow
+- Logout with Refresh Token Revocation
+- Role-Based Authorization
+- Password Reset (Forgot / Reset Password)
+- Authentication Middleware
+- Input Validation with Joi
+- Automated API Testing with Jest & Supertest
 
-# 🚀 Features
+# Tech Stack
 
-User registration with password hashing (bcryptjs)
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcryptjs
+- Joi
+- Jest
+- Supertest
 
-Secure login with JWT access & refresh tokens
-
-Token refresh & logout (token revocation support)
-
-Role-Based Access Control (USER / ADMIN)
-
-Password reset with single-use token (15 min expiry)
-
-Input validation using Joi
-
-MongoDB with Mongoose ODM
-
-Secure environment variable configuration
-
-
-
----
-
-# 🛠️ Tech Stack
-
-Node.js
-
-Express.js
-
-MongoDB
-
-Mongoose
-
-JWT (jsonwebtoken)
-
-bcryptjs
-
-Joi
-
-dotenv
-
-cors
-
-
-
----
-
-# 📁 Project Structure
-
-auth_system/
-│
-├── config/
-│   └── db.js
-│
-├── controllers/
-│   └── authController.js
-│
-├── models/
-│   ├── UserModel.js
-│   ├── RefreshToken.js
-│   └── PasswordReset.js
-│
-├── routes/
-│   └── authRoute.js
-│
-├── services/
-│   └── authService.js
-│
-├── index.js
-├── .env
-└── package.json
-
-
----
-
-# ⚙️ Installation & Setup
-
-1. Clone repository
-
-git clone https://github.com/EdogiStar/auth-system.git
-cd auth-system
-
-
----
-
-2. Install dependencies
+Installation
 
 npm install
 
+# Environment Variables
 
----
-
-3. Setup environment variables
-
-Create a .env file:
+Create a ".env" file:
 
 PORT=3000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_access_token_secret
-REFRESH_SECRET=your_refresh_token_secret
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+REFRESH_TOKEN_SECRET=your_refresh_secret
 
+Run Locally
 
----
+npm start
 
-4. Run server
+Run Tests
 
-node index.js
+npm test
 
-or (recommended during development):
+# API Routes
 
-npx nodemon index.js
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/refresh
+POST /api/auth/logout
+POST /api/auth/forgot-password
+POST /api/auth/reset-password
 
-
----
-
-# 📌 API Endpoints
-
-Auth Routes
-
-Method	Endpoint	Description
-
-POST	/api/auth/register	Register new user
-POST	/api/auth/login	Login user
-POST	/api/auth/refresh	Refresh access token
-POST	/api/auth/logout	Logout user
-
-
-
----
-
-Example Request (Register)
-
-curl -X POST http://localhost:3000/api/auth/register \
--H "Content-Type: application/json" \
--d '{"name":"John","email":"john@example.com","password":"12345678"}'
-
-
----
-
-# 🔐 Authentication Flow
-
-Register → Login → Access Token
-                    ↓
-              Refresh Token (httpOnly cookie recommended)
-                    ↓
-                 Protected Routes
-                 
-                 
